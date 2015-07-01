@@ -1,0 +1,90 @@
+#!/usr/bin/python
+
+# IMPORTS
+import argparse
+import os
+
+from dateutil.relativedelta import relativedelta
+
+# CONSTANTS
+HEADINGS = ('JobRuntime', 'Exitval', 'Signal')
+
+# FUNCTIONS
+mean = lambda x: float(sum(x)) / float(len(x))
+
+# http://stackoverflow.com/questions/6574329/how-can-i-produce-a-human-readable-difference-when-subtracting-two-unix-timestam
+attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+human_readable = lambda delta: ['%d %s' % (getattr(delta, attr), getattr(delta, attr) > 1 and attr or attr[:-1]) for attr in attrs if getattr(delta, attr)]
+
+# MAIN
+if __name__ == '__main__':
+
+	# GET LOG FILENAME
+	parser = argparse.ArgumentParser('Joblog Parser')
+	parser.add_argument('joblog', type=str, help='Path to the joblog file to be analysed.')
+
+	args = parser.parse_args()
+
+	# READ IN THE JOG LOG DATA
+	num_jobs = 0
+	with open(args.joblog, 'rb') as fo:
+
+		header_index = {}
+		data = {x: [] for x in HEADINGS}
+
+		for e, line in enumerate(fo):
+
+			line = line.strip().split('\t')
+
+			if not line:
+				continue
+
+			# HEADER
+			if e == 0:
+				header_index = {x: k for k, x in enumerate(line)}
+				continue
+
+			# CONTENT
+			for heading in HEADINGS:
+				data[heading].append(line[header_index[heading]])
+			
+			num_jobs += 1
+
+	# COUNT EXIT VALUES
+	exit_vals = {}
+
+	for value in data['Exitval']:
+
+		value = int(value)
+
+		if value not in exit_vals:
+			exit_vals[value] = 1
+
+		else:
+			exit_vals[value] += 1
+
+	# OUTPUTS
+
+	print
+	print 'Joblog File: {}'.format(args.joblog)
+	print
+
+	print 'Total Jobs: {}'.format(num_jobs)
+	print
+
+	print 'Average Runtime'
+	print ', '.join(human_readable(relativedelta(seconds=mean([float(x) for x in data['JobRuntime']]))))
+	print
+
+	print 'Cumulative Effective Runtime'
+	print ', '.join(human_readable(relativedelta(seconds=sum(float(x) for x in data['JobRuntime']))))
+	print
+
+	# EXITVAL SUMMARY
+	# COUNT OCCURANCES
+	print 'Exit Values'
+
+	for exit_val, count in sorted(exit_vals.items(), key=lambda x: x[0]):
+		print 'Exit {}: {} occurances'.format(exit_val, count)
+
+	print
