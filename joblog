@@ -22,11 +22,15 @@ if __name__ == '__main__':
 	# GET LOG FILENAME
 	parser = argparse.ArgumentParser('Joblog Parser')
 	parser.add_argument('joblog', type=str, help='Path to the joblog file to be analysed.')
+	parser.add_argument('-s', '--save-failed', action='store_true', help='Write out files with commands that terminated with non-zero exit codes.')
 
 	args = parser.parse_args()
 
+	joblog_noext = os.path.splitext(args.joblog)[0]
+
 	# READ IN THE JOG LOG DATA
 	num_jobs = 0
+	failed_jobs = {}
 	with open(args.joblog, 'rb') as fo:
 
 		header_index = {}
@@ -48,6 +52,14 @@ if __name__ == '__main__':
 			for heading in HEADINGS:
 				data[heading].append(line[header_index[heading]])
 			
+			# FAILED JOBS
+			value = int(line[header_index['Exitval']])
+			if value != 0:
+				if value not in failed_jobs:
+					failed_jobs[value] = [line[header_index['Command']]]
+				else:
+					failed_jobs[value].append(line[header_index['Command']])
+
 			num_jobs += 1
 
 	# COUNT EXIT VALUES
@@ -88,3 +100,19 @@ if __name__ == '__main__':
 		print 'Exit {}: {} occurances'.format(exit_val, count)
 
 	print
+
+	# OPTIONALLY WRITE OUT LISTS OF JOBS THAT FAILED
+	if args.save_failed:
+
+		print 'Saving failed jobs:'
+
+		for exit_val, commands in sorted(failed_jobs.items(), key=lambda x: x[0]):
+			
+			outfile = joblog_noext + '_exit{}.txt'.format(exit_val)
+
+			with open(outfile, 'wb') as fo:
+				fo.write('\n'.join(str(x) for x in commands))
+
+			print 'Wrote {}'.format(outfile)
+		
+		print
