@@ -106,13 +106,19 @@ if __name__ == '__main__':
 
 		print 'Saving failed jobs:'
 
-		for exit_val, commands in sorted(failed_jobs.items(), key=lambda x: x[0]):
-			
-			outfile = joblog_noext + '_exit{}.txt'.format(exit_val)
+		outfile_all = joblog_noext + '_all_failed.txt'
 
-			with open(outfile, 'wb') as fo:
-				fo.write('\n'.join(str(x) for x in commands))
+		with open(outfile_all, 'wb') as all_fo:
+			for exit_val, commands in sorted(failed_jobs.items(), key=lambda x: x[0]):
+				
+				outfile = joblog_noext + '_exit{}.txt'.format(exit_val)
 
-			print 'Wrote {}'.format(outfile)
+				with open(outfile, 'wb') as fo:
+					fo.write('\n'.join(str(x) for x in commands))
+
+				print 'Wrote {}'.format(outfile)
+
+				all_fo.write('\n'.join(str(x) for x in commands))
 		
+		print 'Wrote {}'.format(outfile_all)
 		print
