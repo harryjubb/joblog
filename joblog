@@ -84,12 +84,22 @@ if __name__ == '__main__':
 	print 'Total Jobs: {}'.format(num_jobs)
 	print
 
+	runtimes = [float(x) for x in data['JobRuntime']]
+
+	print 'Minimum Runtime'
+	print ', '.join(human_readable(relativedelta(seconds=min(runtimes))))
+	print
+
+	print 'Maximum Runtime'
+	print ', '.join(human_readable(relativedelta(seconds=max(runtimes))))
+	print
+
 	print 'Average Runtime'
-	print ', '.join(human_readable(relativedelta(seconds=mean([float(x) for x in data['JobRuntime']]))))
+	print ', '.join(human_readable(relativedelta(seconds=mean(runtimes))))
 	print
 
 	print 'Cumulative Effective Runtime'
-	print ', '.join(human_readable(relativedelta(seconds=sum(float(x) for x in data['JobRuntime']))))
+	print ', '.join(human_readable(relativedelta(seconds=sum(runtimes))))
 	print
 
 	# EXITVAL SUMMARY
