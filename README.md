@@ -11,7 +11,7 @@ Written in Python, but can be run from the command line as an executable.
 
     # ./install.sh
 
-Works on *nix platforms and installs into `/usr/bin`.
+Works on *nix platforms and installs into `/usr/bin`. Alternatively, just copy `joblog` to wherever you want to run it from.
 
 ## Help
 
