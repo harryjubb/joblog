@@ -106,10 +106,18 @@ if __name__ == '__main__':
 	# COUNT OCCURANCES
 	print 'Exit Values'
 
+	exit_value_counts = {}
+
 	for exit_val, count in sorted(exit_vals.items(), key=lambda x: x[0]):
 		print 'Exit {}: {} occurances'.format(exit_val, count)
+		exit_value_counts[exit_val] = count
 
 	print
+
+	# ADD PROPORTION OF SUCCESSFUL JOBS
+	success_ratio = float(exit_value_counts[0]) / float(sum([v for v in exit_value_counts.itervalues()]))
+
+	print '{}\% successful.'.format(success_ratio * 100)
 
 	# OPTIONALLY WRITE OUT LISTS OF JOBS THAT FAILED
 	if args.save_failed:
