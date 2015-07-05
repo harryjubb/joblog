@@ -118,6 +118,7 @@ if __name__ == '__main__':
 	success_ratio = float(exit_value_counts[0]) / float(sum([v for v in exit_value_counts.itervalues()]))
 
 	print '{}\% successful.'.format(success_ratio * 100)
+	print
 
 	# OPTIONALLY WRITE OUT LISTS OF JOBS THAT FAILED
 	if args.save_failed:
