@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
 	joblog_noext = os.path.splitext(args.joblog)[0]
 
-	# READ IN THE JOG LOG DATA
+	# READ IN THE JOB LOG DATA
 	num_jobs = 0
 	failed_jobs = {}
 	with open(args.joblog, 'rb') as fo:
